@@ -1,0 +1,28 @@
+{
+  "name": "htdp-javascript-pt-br",
+  "version": "0.0.1",
+  "description": "This is an educational library inspired by the htdp library existing for the Racket language, aiming to enable the use of ideas similar to the How to Design Programs approach for teaching programming.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/helioh2/htdp-javascript-pt-br.git"
+  },
+  "keywords": [
+    "htdp",
+    "educational",
+    "programming",
+    "learning",
+    "racket",
+    "systematic",
+    "program",
+    "design"
+  ],
+  "author": "Helio H. Monte-Alto",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/helioh2/htdp-javascript-pt-br/issues"
+  }
+}
