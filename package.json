@@ -4,7 +4,8 @@
   "description": "This is an educational library inspired by the htdp library existing for the Racket language, aiming to enable the use of ideas similar to the How to Design Programs approach for teaching programming.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "serve": "parcel ./index.html",
+    "build": "parcel build ./index.html"
   },
   "repository": {
     "type": "git",
@@ -24,5 +25,10 @@
   "license": "BSD-2-Clause",
   "bugs": {
     "url": "https://github.com/helioh2/htdp-javascript-pt-br/issues"
+  },
+  "dependencies": {
+    "eslint": "^8.44.0",
+    "parcel-bundler": "^1.12.5",
+    "typescript": "^5.1.6"
   }
 }
