@@ -7,6 +7,7 @@ export interface Settings {
     desenhar?: Function,
     quandoTecla?: Function,
     quandoSoltaTecla?: Function,
+    quandoMouse?: Function,
     pararQuando?: Function,
     modoDebug?: boolean
 }
@@ -18,6 +19,7 @@ const defaultSettings: Settings = {
     quandoTecla: (x, k) => x,
     quandoSoltaTecla: (x, k) => x,
     pararQuando: x => false,
+    quandoMouse: (x, ev) => x,
     modoDebug: false,
 }
 
@@ -31,6 +33,24 @@ export function bigBang(inic: any, settings: Settings = defaultSettings) {
     });
 
     let estado = inic;
+
+    document.addEventListener("keydown", (ev) => {
+        estado = settings.quandoTecla!(estado, ev.key)
+    })
+
+    document.addEventListener("keyup", (ev) => {
+        estado = settings.quandoSoltaTecla!(estado, ev.key)
+    })
+
+    const trataMouse = ev => {
+        let x = ev.offsetX;
+        let y = ev.offsetY;
+        estado = settings.quandoMouse!(estado, x, y, ev.type)
+    }
+
+    canvas.addEventListener("mousedown", trataMouse);
+    canvas.addEventListener("mousemove", trataMouse);
+    canvas.addEventListener("mouseup", trataMouse); // TODO: verificar necessidade de tratar mais eventos de mouse
 
     const timeStep = 1000 / settings.frequencia!;
 
@@ -49,8 +69,13 @@ export function bigBang(inic: any, settings: Settings = defaultSettings) {
 
         // Atualiza o jogo
         while (delta > timeStep) {
-            estado = settings.aCadaTick!(estado);
 
+            if (settings.pararQuando!(estado)){
+                return  
+            }
+
+            estado = settings.aCadaTick!(estado);
+            
             delta = delta - timeStep;
         }
 

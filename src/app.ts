@@ -22,16 +22,44 @@ const X_FOGUETE = LARGURA / 2
 
 // IMAGEM.desenha();
 
-function desce(y: number): number {
-    return y+1
+function desce(foguete: number): number {
+    return foguete+1
 }
 
 
-function desenhar(y: number): Imagem {
-    return colocarImagem(FOGUETE, X_FOGUETE, y, TELA_VAZIA);
+function desenhar(foguete: number): Imagem {
+    return colocarImagem(FOGUETE, X_FOGUETE, foguete, TELA_VAZIA);
 }
 
-// desenhar(100).desenha()
 
-bigBang(0, {aCadaTick: desce, desenhar: desenhar, frequencia: 60});
+function trataTecla(foguete: number, tecla: string) {
+    if (tecla === " ") {
+        return 0;
+    } else {
+        return foguete;
+    }
+}
+
+function trataMouse(foguete: number, x: number, y: number, evType) {
+    if (evType === "mousemove") {
+        return y;
+    } else {
+        return foguete;
+    }
+}
+
+
+function pararQuando(foguete: number) {
+    return foguete >= ALTURA-50
+}
+
+bigBang(0, 
+    {
+        aCadaTick: desce, 
+        desenhar: desenhar, 
+        frequencia: 60,
+        quandoTecla: trataTecla,
+        quandoMouse: trataMouse,
+        pararQuando: pararQuando
+    });
 
