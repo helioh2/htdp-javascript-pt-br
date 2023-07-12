@@ -1,4 +1,4 @@
-import { Imagem, ModoImagem, carregarImagem, cenaVazia, circulo, colocarImagem, elipse, quadrado, retangulo, rotacionar } from "../lib/image"
+import { Imagem, ModoImagem, carregarImagem, cenaVazia, circulo, colocarImagem, elipse, encima, folhaTransparente, lado, quadrado, retangulo, rotacionar } from "../lib/image"
 import { bigBang } from "../lib/universe";
 
 
@@ -10,7 +10,18 @@ const ALTURA = 600;
 
 const TELA_VAZIA = cenaVazia(LARGURA, ALTURA);
 
-const IMAGEM = colocarImagem(ret2, 100, 100, colocarImagem(ret1, 20, 40, TELA_VAZIA));
+const IMAGEM0 = colocarImagem(ret1, 100, 100, TELA_VAZIA)
+
+const IMAGEM = colocarImagem(ret2, 100, 100, colocarImagem(ret1, 200, 200, TELA_VAZIA));
+
+const FOLHA_T = folhaTransparente(200, 200);
+
+const composta1 = colocarImagem(ret1, 25,75, FOLHA_T);
+
+const IMAGEM2 = colocarImagem(composta1, 100, 100, TELA_VAZIA);
+
+
+IMAGEM2.desenha()
 
 const FOGUETE = carregarImagem("./foguete.png", 200, 200);
 const FOGUETE2 = FOGUETE.rotacionar(45);
@@ -36,11 +47,20 @@ const FOGUETE3 = FOGUETE2.espelhar();
 // FOGUETE3.desenha()   
 // ret2.desenha()
 // ret3.desenha()
-ret4.desenha()
+// ret4.desenha()
 // el1.rotacionar(45).desenha()
 
 
+const circ1 = circulo(50, "green", "solid")
+const quad1 = quadrado(100, "red", "solid")
 
+const juncaoLado = lado(circ1, quad1)
+const juncaoCima = encima(circ1, quad1)
+
+// lado(juncaoCima, juncaoCima).desenha()
+// encima(juncaoLado, juncaoLado).desenha()
+
+juncaoLado.desenha()
 
 const X_FOGUETE = LARGURA / 2
 

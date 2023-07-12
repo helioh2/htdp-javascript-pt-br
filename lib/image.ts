@@ -13,17 +13,27 @@ function em_radianos(angulo_em_graus: number) {
 
 export abstract class Imagem {
 
+    largura: number;
+    altura: number;
     angulo: number;
     espelhado: boolean;
 
-    constructor(angulo: number) {
+    constructor(largura: number, altura: number, angulo: number) {
+        this.largura = largura;
+        this.altura = altura;
         this.angulo = angulo;
         this.espelhado = false;
     }
     
     abstract desenha(x?: number|null, y?: number|null): void;
 
-    abstract redimensionar(proporcao: number);
+    redimensionar(proporcao: number) {
+        return Object.assign(Object.create(this), 
+            {
+                largura: this.largura * proporcao, 
+                altura: this.altura * proporcao
+            })
+    }
 
     rotacionar(angulo: number): Imagem {
         return Object.assign(Object.create(this), {...this, angulo: this.angulo + angulo})
@@ -36,30 +46,36 @@ export abstract class Imagem {
 }
 
 
-class ImagemVazia extends Imagem {
-
-    largura: number;
-    altura: number;
+class FolhaTransparente extends Imagem {
 
     constructor(largura: number, altura: number) {
-        super(0);
-        this.largura = largura;
-        this.altura = altura;
+        super(largura, altura, 0);
+    }
+
+    desenha(x: number|null = null, y: number|null = null) {
+
+        x = x == null? canvas!.width/2: x;
+        y = y == null? canvas!.height/2: y;
+
+        let ctx = canvas!.getContext("2d");
+        ctx!.save();
+        ctx!.translate(x-this.largura/2, y-this.altura/2);
+    }
+
+    
+}
+
+class CenaVazia extends Imagem {
+
+
+    constructor(largura: number, altura: number) {
+        super(largura, altura, 0);
         canvas!.width = largura;
         canvas!.height = altura;
-
     }
 
     desenha(x: number|null = null, y: number|null = null) {
         limparCanvas();
-    }
-
-    redimensionar(proporcao: number) {
-        return Object.assign(Object.create(this), 
-            {
-                largura: this.largura * proporcao, 
-                altura: this.altura * proporcao
-            })
     }
 
 }
@@ -69,10 +85,10 @@ class ImagemComposta extends Imagem {
     imagemFrente: Imagem;
     x: number;
     y: number;
-    imagemFundo: ImagemVazia | ImagemComposta;
+    imagemFundo: FolhaTransparente | ImagemComposta | CenaVazia;
 
-    constructor(imagemFrente: Imagem, x: number, y: number, imagemFundo: ImagemVazia|ImagemComposta) {
-        super(0);
+    constructor(imagemFrente: Imagem, x: number, y: number, imagemFundo: CenaVazia|ImagemComposta) {
+        super(imagemFundo.largura, imagemFundo.altura, 0);
         this.imagemFrente = imagemFrente;
         this.x = x;
         this.y = y;
@@ -80,13 +96,17 @@ class ImagemComposta extends Imagem {
     }
 
     desenha(x: number|null = null, y: number|null = null) {
-        this.imagemFundo.desenha();
+        this.imagemFundo.desenha(x, y);
+        // let ctx = canvas!.getContext("2d");
+        // ctx!.save();
+        // ctx!.translate(x!, y!);
         this.imagemFrente.desenha(this.x, this.y);
 
     }
 
     redimensionar(proporcao: number) {
         return Object.assign(Object.create(this), {
+            ...super.redimensionar(proporcao),
             imagemFundo: this.imagemFundo.redimensionar(proporcao),
             imagemFrente: this.imagemFrente.redimensionar(proporcao)
         })//TODO: criar versão que redimensiona considerando o distanciamento dos objetos
@@ -94,6 +114,7 @@ class ImagemComposta extends Imagem {
 
     rotacionar(angulo: number): Imagem {
         return Object.assign(Object.create(this), {
+            ...super.rotacionar(angulo),
             imagemFundo: this.imagemFundo.rotacionar(angulo),
             imagemFrente: this.imagemFrente.rotacionar(angulo)
         })//TODO: criar versão que redimensiona considerando o distanciamento dos objetos
@@ -103,25 +124,15 @@ class ImagemComposta extends Imagem {
 
 abstract class RetLike extends Imagem {
 
-    largura: number;
-    altura: number;
     cor: string;
     modo: ModoImagem;
 
     constructor(largura: number, altura: number, cor: string, modo: ModoImagem, angulo: number) {
-        super(angulo)
-        this.largura = largura;
-        this.altura = altura;
+        super(largura, altura, angulo)
         this.cor = cor;
         this.modo = modo;
     }
 
-    redimensionar(proporcao: number) {
-        return Object.assign(Object.create(this), {
-            largura: this.largura * proporcao, 
-            altura: this.altura * proporcao
-        })
-    }
 }
 
 class Retangulo extends RetLike {
@@ -168,15 +179,16 @@ class Elipse extends RetLike {
             ctx!.translate(this.largura, 0);
             ctx!.scale(-1,1)
         }
-
+        
+           
         ctx!.ellipse(x, y, this.largura/2, this.altura/2, em_radianos(this.angulo), 0, 2*Math.PI);
-        if (this.modo == ModoImagem.OUTLINE) {
-            ctx!.stroke();
+        if (this.modo == ModoImagem.OUTLINE) {         
             ctx!.strokeStyle = this.cor;
-        } else {
-            ctx!.fill();
+            ctx!.stroke();
+        } else {          
             ctx!.fillStyle = this.cor;
-        }      
+            ctx!.fill();
+        }   
     }
 }
 
@@ -184,13 +196,9 @@ class Elipse extends RetLike {
 class ImagemDeArquivo extends Imagem {
     src: string;
     img: HTMLImageElement;
-    largura: number;
-    altura: number;
 
     constructor(src: string, largura: number, altura: number, angulo: number) {
-        super(angulo);
-        this.largura = largura;
-        this.altura = altura;
+        super(largura, altura, angulo);
         this.src = src;
         this.img = new Image();
         this.img.src = this.src
@@ -225,20 +233,13 @@ class ImagemDeArquivo extends Imagem {
         }
     }
 
-    redimensionar(proporcao: number) {
-        return Object.assign(Object.create(this), {
-            ...this, 
-            largura: this.largura * proporcao, 
-            altura: this.altura * proporcao
-        })
-    }
 }
-
 
 
 
 function limparCanvas() {
     let ctx = canvas!.getContext("2d");
+    // ctx!.restore();
     ctx!.clearRect(0, 0, canvas!.width, canvas!.height);
 }
 
@@ -246,12 +247,12 @@ function limparCanvas() {
 
 // FUNÇÕES EXPORTADAS:
 
-export function colocarImagem(imagemFrente: Imagem, x: number, y: number, imagemFundo: ImagemVazia|ImagemComposta) {
+export function colocarImagem(imagemFrente: Imagem, x: number, y: number, imagemFundo: CenaVazia|ImagemComposta) {
     return new ImagemComposta(imagemFrente, x, y, imagemFundo)
 }
 
 export function cenaVazia(largura: number, altura: number) {
-    return new ImagemVazia(largura, altura, 0);
+    return new CenaVazia(largura, altura, 0);
 }
 
 export function retangulo(largura: number, altura: number, cor: string = "black", modo: string = "outline"): Retangulo {
@@ -281,4 +282,24 @@ export function redimensionar(imagem: Imagem, proporcao: number) {
 
 export function rotacionar(imagem: Imagem, angulo: number) {
     return imagem.rotacionar(angulo);
+}
+
+export function folhaTransparente(largura: number, altura: number) {
+    return new FolhaTransparente(largura, altura);
+}
+
+export function lado(img1: Imagem, img2: Imagem) {
+    let folhaT = folhaTransparente(img1.largura + img2.largura, Math.max(img1.altura, img2.altura));
+    let lado1 = colocarImagem(img1, 0+img1.largura/2, 0+img1.altura/2, folhaT);
+    let lado2 = colocarImagem(img2, img1.largura+img2.largura/2, 0+img2.altura/2, lado1);
+
+    return lado2
+}
+
+export function encima(img1: Imagem, img2: Imagem) {
+    let folhaT = folhaTransparente(Math.max(img1.largura, img2.largura), img1.altura + img2.altura);
+    let lado1 = colocarImagem(img1, 0+img1.largura/2, 0+img1.altura/2, folhaT);
+    let lado2 = colocarImagem(img2, img2.largura/2, img1.altura+img2.altura/2, lado1);
+
+    return lado2
 }
