@@ -97,11 +97,7 @@ class ImagemComposta extends Imagem {
 
     desenha(x: number|null = null, y: number|null = null) {
         this.imagemFundo.desenha(x, y);
-        // let ctx = canvas!.getContext("2d");
-        // ctx!.save();
-        // ctx!.translate(x!, y!);
         this.imagemFrente.desenha(this.x, this.y);
-
     }
 
     redimensionar(proporcao: number) {

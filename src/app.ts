@@ -67,7 +67,7 @@ const X_FOGUETE = LARGURA / 2
 const circ1 = circulo(50, "green", "solid")
 const quad1 = quadrado(100, "red", "solid")
 
-// const FOGUETE = lado(circ1, quad1)
+const FOGUETE = lado(circ1, quad1)
 const juncaoCima = encima(circ1, quad1)
 // const FOGUETE = sobrepor(quad1, circ1)
 // const tela = colocarImagem(FOGUETE, X_FOGUETE, 500, TELA_VAZIA)
@@ -90,7 +90,7 @@ function desce(foguete: number): number {
 
 
 function desenhar(foguete: number): Imagem {
-    return colocarImagem(FOGUETE, X_FOGUETE, foguete, TELA_VAZIA);
+    return colocarImagem(rotacionar(FOGUETE, foguete), X_FOGUETE, foguete, TELA_VAZIA);
 }
 
 
@@ -128,5 +128,5 @@ function main() {
 }
 
 
-// main();
+main();
 
