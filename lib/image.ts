@@ -236,6 +236,28 @@ class ImagemDeArquivo extends Imagem {
 }
 
 
+class TextoImagem extends Imagem {
+    texto: string;
+    fonte: string;
+    tamanho: string;
+
+    constructor(texto: string, fonte: string, tamanho: string) {
+        super(0,0,0)
+        this.texto = texto;
+        this.fonte = fonte;
+        this.tamanho = tamanho;
+    }
+
+    desenha(x: number|null = null, y: number|null = null) {
+        x = x == null? canvas!.width/2: x;
+        y = y == null? canvas!.height/2: y;
+
+        const ctx = canvas!.getContext("2d");
+        ctx!.font = this.tamanho + " " + this.fonte;
+        ctx!.fillText(this.texto, x!, y!);
+    }
+}
+
 
 function limparCanvas() {
     let ctx = canvas!.getContext("2d");
@@ -269,6 +291,10 @@ export function quadrado(lado: number, cor: string = "black", modo: string = "ou
 
 export function circulo(raio: number, cor: string = "black", modo: string = "outline"): Elipse {
     return new Elipse(raio*2, raio*2, cor, modo as ModoImagem, 0);
+}
+
+export function texto(texto: string, fonte: string = "Arial", tamanho: string = "30px") {
+    return new TextoImagem(texto, fonte, tamanho);
 }
 
 export function carregarImagem(nomeArquivo: string, largura: number = 50, altura: number = 50) {
@@ -313,3 +339,4 @@ export function sobrepor(img1: Imagem, img2: Imagem) {
     return layer2
 
 }
+

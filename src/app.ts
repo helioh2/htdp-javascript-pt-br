@@ -1,5 +1,6 @@
-import { Imagem, ModoImagem, carregarImagem, cenaVazia, circulo, colocarImagem, elipse, encima, folhaTransparente, lado, quadrado, retangulo, rotacionar, sobrepor } from "../lib/image"
+import { Imagem, ModoImagem, carregarImagem, cenaVazia, circulo, colocarImagem, elipse, encima, folhaTransparente, lado, quadrado, retangulo, rotacionar, sobrepor, texto } from "../lib/image"
 import { bigBang } from "../lib/universe";
+
 
 
 const ret1 = retangulo(50, 150, "red", ModoImagem.SOLID);
@@ -9,6 +10,12 @@ const LARGURA = 600;
 const ALTURA = 600;
 
 const TELA_VAZIA = cenaVazia(LARGURA, ALTURA);
+
+const texto1 = texto("OLA MUNDO");
+
+// texto1.desenha()
+const texto2 = colocarImagem(texto1, 20, 30, TELA_VAZIA);
+texto2.desenha()
 
 const IMAGEM0 = colocarImagem(ret1, 100, 100, TELA_VAZIA)
 
@@ -21,7 +28,7 @@ const composta1 = colocarImagem(ret1, 25,75, FOLHA_T);
 const IMAGEM2 = colocarImagem(composta1, 100, 100, TELA_VAZIA);
 
 
-IMAGEM2.desenha()
+// IMAGEM2.desenha()
 
 // const FOGUETE = carregarImagem("./foguete.png", 200, 200);
 // const FOGUETE2 = FOGUETE.rotacionar(45);
@@ -36,6 +43,10 @@ const el2 = el1.espelhar()
 const VACA = carregarImagem("./vaca-ino.png", 160, 100);
 
 const VACA2 = VACA.espelhar()
+
+
+
+
 
 // VACA2.rotacionar(45).desenha()
 
@@ -117,5 +128,5 @@ function main() {
 }
 
 
-main();
+// main();
 
