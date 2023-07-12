@@ -1,23 +1,32 @@
-import { Imagem, ModoImagem, carregarImagem, cenaVazia, circulo, colocarImagem, elipse, quadrado, retangulo } from "../lib/image"
+import { Imagem, ModoImagem, carregarImagem, cenaVazia, circulo, colocarImagem, elipse, quadrado, retangulo, rotacionar } from "../lib/image"
 import { bigBang } from "../lib/universe";
 
 
-const ret1 = retangulo(50, 50, "blue", ModoImagem.OUTLINE);
+const ret1 = retangulo(50, 150, "red", ModoImagem.SOLID);
 const ret2 = retangulo(150, 50, "blue", ModoImagem.SOLID);
 
-const LARGURA = 300;
-const ALTURA = 300;
+const LARGURA = 600;
+const ALTURA = 600;
 
 const TELA_VAZIA = cenaVazia(LARGURA, ALTURA);
 
 const IMAGEM = colocarImagem(ret2, 100, 100, colocarImagem(ret1, 20, 40, TELA_VAZIA));
 
-const FOGUETE = carregarImagem("./foguete.png");
+const FOGUETE = carregarImagem("./foguete.png", 200, 200);
+// const FOGUETE = FOGUETE2.rotacionar(45*Math.PI / 180);
 
+const ret3 = ret1.rotacionar(62)
 // const FOGUETE = retangulo(50, 50, "blue", ModoImagem.OUTLINE);
 
-FOGUETE.desenha()
-// FOGUETE2.desenha()
+const el1 = elipse(100,50, "red", "solid")
+
+// FOGUETE.desenha()   
+// ret2.desenha()
+ret3.desenha()
+
+el1.rotacionar(45).desenha()
+
+
 
 
 const X_FOGUETE = LARGURA / 2
@@ -34,7 +43,7 @@ function desce(foguete: number): number {
 
 
 function desenhar(foguete: number): Imagem {
-    return colocarImagem(FOGUETE, X_FOGUETE, foguete, TELA_VAZIA);
+    return colocarImagem(rotacionar(FOGUETE, foguete), X_FOGUETE, foguete, TELA_VAZIA);
 }
 
 
