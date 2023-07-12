@@ -13,18 +13,31 @@ const TELA_VAZIA = cenaVazia(LARGURA, ALTURA);
 const IMAGEM = colocarImagem(ret2, 100, 100, colocarImagem(ret1, 20, 40, TELA_VAZIA));
 
 const FOGUETE = carregarImagem("./foguete.png", 200, 200);
-// const FOGUETE = FOGUETE2.rotacionar(45*Math.PI / 180);
+const FOGUETE2 = FOGUETE.rotacionar(45);
 
 const ret3 = ret1.rotacionar(62)
 // const FOGUETE = retangulo(50, 50, "blue", ModoImagem.OUTLINE);
+const ret4 = ret3.espelhar()
 
-const el1 = elipse(100,50, "red", "solid")
+const el1 = elipse(300,100, "red", "solid")
+const el2 = el1.espelhar()
 
-// FOGUETE.desenha()   
+const VACA = carregarImagem("./vaca-ino.png", 160, 100);
+
+const VACA2 = VACA.espelhar()
+
+// VACA2.rotacionar(45).desenha()
+
+// VACA.rotacionar(45).desenha()
+
+const FOGUETE3 = FOGUETE2.espelhar();
+
+// FOGUETE2.desenha() 
+// FOGUETE3.desenha()   
 // ret2.desenha()
-ret3.desenha()
-
-el1.rotacionar(45).desenha()
+// ret3.desenha()
+ret4.desenha()
+// el1.rotacionar(45).desenha()
 
 
 
@@ -81,5 +94,5 @@ function main() {
 }
 
 
-main();
+// main();
 

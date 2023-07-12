@@ -14,9 +14,11 @@ function em_radianos(angulo_em_graus: number) {
 export abstract class Imagem {
 
     angulo: number;
+    espelhado: boolean;
 
     constructor(angulo: number) {
         this.angulo = angulo;
+        this.espelhado = false;
     }
     
     abstract desenha(x?: number|null, y?: number|null): void;
@@ -25,6 +27,10 @@ export abstract class Imagem {
 
     rotacionar(angulo: number): Imagem {
         return Object.assign(Object.create(this), {...this, angulo: this.angulo + angulo})
+    }
+
+    espelhar(): Imagem {
+        return Object.assign(Object.create(this), {...this, espelhado: !this.espelhado})
     }
 
 }
@@ -131,6 +137,11 @@ class Retangulo extends RetLike {
         ctx!.rotate(em_radianos(this.angulo));
         ctx!.translate(-this.largura / 2, -this.altura / 2);
 
+        if (this.espelhado) {
+            ctx!.translate(this.largura, 0);
+            ctx!.scale(-1,1)
+        }
+
         if (this.modo == ModoImagem.OUTLINE) {
             ctx!.strokeStyle = this.cor;
             ctx!.strokeRect(0, 0, this.largura, this.altura);
@@ -152,6 +163,12 @@ class Elipse extends RetLike {
 
         let ctx = canvas!.getContext("2d");
         ctx!.beginPath();
+
+        if (this.espelhado) {
+            ctx!.translate(this.largura, 0);
+            ctx!.scale(-1,1)
+        }
+
         ctx!.ellipse(x, y, this.largura/2, this.altura/2, em_radianos(this.angulo), 0, 2*Math.PI);
         if (this.modo == ModoImagem.OUTLINE) {
             ctx!.stroke();
@@ -182,11 +199,16 @@ class ImagemDeArquivo extends Imagem {
     private desenha_rotacionando(x:number, y:number) {
         let ctx = canvas!.getContext("2d");
         ctx!.save()    
-        ctx!.beginPath();
         ctx!.translate(x, y);
         ctx!.rotate(em_radianos(this.angulo));
-        ctx!.translate(-this.largura / 2, -this.altura / 2);     
+        ctx!.translate(-this.largura / 2, -this.altura / 2);    
+        
+        if (this.espelhado) {
+            ctx!.translate(this.largura, 0)
+            ctx!.scale(-1,1)        
+        } 
         ctx!.drawImage(this.img, 0, 0, this.largura, this.altura);
+
         ctx!.restore()
     }
 
