@@ -239,7 +239,7 @@ class ImagemDeArquivo extends Imagem {
 
 function limparCanvas() {
     let ctx = canvas!.getContext("2d");
-    // ctx!.restore();
+    ctx!.restore();
     ctx!.clearRect(0, 0, canvas!.width, canvas!.height);
 }
 
@@ -290,16 +290,26 @@ export function folhaTransparente(largura: number, altura: number) {
 
 export function lado(img1: Imagem, img2: Imagem) {
     let folhaT = folhaTransparente(img1.largura + img2.largura, Math.max(img1.altura, img2.altura));
-    let lado1 = colocarImagem(img1, 0+img1.largura/2, 0+img1.altura/2, folhaT);
-    let lado2 = colocarImagem(img2, img1.largura+img2.largura/2, 0+img2.altura/2, lado1);
+    let layer1 = colocarImagem(img1, 0+img1.largura/2, 0+img1.altura/2, folhaT);
+    let layer2 = colocarImagem(img2, img1.largura+img2.largura/2, 0+img2.altura/2, layer1);
 
-    return lado2
+    return layer2
 }
 
 export function encima(img1: Imagem, img2: Imagem) {
     let folhaT = folhaTransparente(Math.max(img1.largura, img2.largura), img1.altura + img2.altura);
-    let lado1 = colocarImagem(img1, 0+img1.largura/2, 0+img1.altura/2, folhaT);
-    let lado2 = colocarImagem(img2, img2.largura/2, img1.altura+img2.altura/2, lado1);
+    let layer1 = colocarImagem(img1, 0+img1.largura/2, 0+img1.altura/2, folhaT);
+    let layer2 = colocarImagem(img2, img2.largura/2, img1.altura+img2.altura/2, layer1);
 
-    return lado2
+    return layer2
+}
+
+
+export function sobrepor(img1: Imagem, img2: Imagem) {
+    let folhaT = folhaTransparente(Math.max(img1.largura, img2.largura), Math.max(img1.altura, img2.altura));
+    let layer1 = colocarImagem(img1, 0+img1.largura/2, 0+img1.altura/2, folhaT);
+    let layer2 = colocarImagem(img2, 0+img1.largura/2, 0+img2.altura/2, layer1);
+
+    return layer2
+
 }

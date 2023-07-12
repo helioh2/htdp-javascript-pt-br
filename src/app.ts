@@ -1,4 +1,4 @@
-import { Imagem, ModoImagem, carregarImagem, cenaVazia, circulo, colocarImagem, elipse, encima, folhaTransparente, lado, quadrado, retangulo, rotacionar } from "../lib/image"
+import { Imagem, ModoImagem, carregarImagem, cenaVazia, circulo, colocarImagem, elipse, encima, folhaTransparente, lado, quadrado, retangulo, rotacionar, sobrepor } from "../lib/image"
 import { bigBang } from "../lib/universe";
 
 
@@ -23,8 +23,8 @@ const IMAGEM2 = colocarImagem(composta1, 100, 100, TELA_VAZIA);
 
 IMAGEM2.desenha()
 
-const FOGUETE = carregarImagem("./foguete.png", 200, 200);
-const FOGUETE2 = FOGUETE.rotacionar(45);
+// const FOGUETE = carregarImagem("./foguete.png", 200, 200);
+// const FOGUETE2 = FOGUETE.rotacionar(45);
 
 const ret3 = ret1.rotacionar(62)
 // const FOGUETE = retangulo(50, 50, "blue", ModoImagem.OUTLINE);
@@ -41,7 +41,7 @@ const VACA2 = VACA.espelhar()
 
 // VACA.rotacionar(45).desenha()
 
-const FOGUETE3 = FOGUETE2.espelhar();
+// const FOGUETE3 = FOGUETE2.espelhar();
 
 // FOGUETE2.desenha() 
 // FOGUETE3.desenha()   
@@ -50,19 +50,22 @@ const FOGUETE3 = FOGUETE2.espelhar();
 // ret4.desenha()
 // el1.rotacionar(45).desenha()
 
+const X_FOGUETE = LARGURA / 2
+
 
 const circ1 = circulo(50, "green", "solid")
 const quad1 = quadrado(100, "red", "solid")
 
-const juncaoLado = lado(circ1, quad1)
+// const FOGUETE = lado(circ1, quad1)
 const juncaoCima = encima(circ1, quad1)
-
+// const FOGUETE = sobrepor(quad1, circ1)
+// const tela = colocarImagem(FOGUETE, X_FOGUETE, 500, TELA_VAZIA)
+// tela.desenha()
 // lado(juncaoCima, juncaoCima).desenha()
 // encima(juncaoLado, juncaoLado).desenha()
 
-juncaoLado.desenha()
+// FOGUETE.desenha()
 
-const X_FOGUETE = LARGURA / 2
 
 // IMAGEM.desenha();
 
@@ -71,12 +74,12 @@ const X_FOGUETE = LARGURA / 2
 // IMAGEM.desenha();
 
 function desce(foguete: number): number {
-    return foguete+1
+    return foguete+1;
 }
 
 
 function desenhar(foguete: number): Imagem {
-    return colocarImagem(rotacionar(FOGUETE, foguete), X_FOGUETE, foguete, TELA_VAZIA);
+    return colocarImagem(FOGUETE, X_FOGUETE, foguete, TELA_VAZIA);
 }
 
 
@@ -106,7 +109,7 @@ function main() {
         {
             aCadaTick: desce, 
             desenhar: desenhar, 
-            frequencia: 60,
+            frequencia: 30,
             quandoTecla: trataTecla,
             quandoMouse: trataMouse,
             pararQuando: pararQuando
@@ -114,5 +117,5 @@ function main() {
 }
 
 
-// main();
+main();
 
