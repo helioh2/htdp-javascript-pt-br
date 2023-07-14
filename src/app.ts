@@ -30,7 +30,7 @@ const IMAGEM2 = colocarImagem(composta1, 100, 100, TELA_VAZIA);
 
 // IMAGEM2.desenha()
 
-// const FOGUETE = carregarImagem("./foguete.png", 200, 200);
+const FOGUETE = carregarImagem("./foguete.png", 200, 200);
 // const FOGUETE2 = FOGUETE.rotacionar(45);
 
 const ret3 = ret1.rotacionar(62)
@@ -67,7 +67,7 @@ const X_FOGUETE = LARGURA / 2
 const circ1 = circulo(50, "green", "solid")
 const quad1 = quadrado(100, "red", "solid")
 
-const FOGUETE = lado(circ1, quad1)
+// const FOGUETE = lado(circ1, quad1)
 const juncaoCima = encima(circ1, quad1)
 // const FOGUETE = sobrepor(quad1, circ1)
 // const tela = colocarImagem(FOGUETE, X_FOGUETE, 500, TELA_VAZIA)
@@ -120,7 +120,7 @@ function main() {
         {
             aCadaTick: desce, 
             desenhar: desenhar, 
-            frequencia: 30,
+            frequencia: 60,
             quandoTecla: trataTecla,
             quandoMouse: trataMouse,
             pararQuando: pararQuando

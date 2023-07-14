@@ -270,7 +270,7 @@ export function colocarImagem(imagemFrente: Imagem, x: number, y: number, imagem
 }
 
 export function cenaVazia(largura: number, altura: number) {
-    return new CenaVazia(largura, altura, 0);
+    return new CenaVazia(largura, altura);
 }
 
 export function retangulo(largura: number, altura: number, cor: string = "black", modo: string = "outline"): Retangulo {
@@ -304,6 +304,10 @@ export function redimensionar(imagem: Imagem, proporcao: number) {
 
 export function rotacionar(imagem: Imagem, angulo: number) {
     return imagem.rotacionar(angulo);
+}
+
+export function espelhar(imagem: Imagem) {
+    return imagem.espelhar();
 }
 
 export function folhaTransparente(largura: number, altura: number) {
