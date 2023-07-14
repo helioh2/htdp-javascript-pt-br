@@ -1,6 +1,6 @@
 
 
-const canvas = document.getElementById("tela") as HTMLCanvasElement | null;
+const canvas = (document.getElementById("tela") || document.createElement('canvas')) as HTMLCanvasElement;
 
 export enum ModoImagem {
     OUTLINE="outline",

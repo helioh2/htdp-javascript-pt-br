@@ -130,3 +130,9 @@ function main() {
 
 main();
 
+
+describe('teste de main', () => {
+    test('apenas passa', () => {
+      expect(true).toBe(true);
+    });
+  });

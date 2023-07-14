@@ -1,5 +1,5 @@
+const canvas = (document.getElementById("tela") || document.createElement('canvas')) as HTMLCanvasElement;
 
-const canvas = document.getElementById("tela") as HTMLCanvasElement;
 
 export interface Settings {
     aCadaTick?: Function,
