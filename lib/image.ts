@@ -7,25 +7,84 @@ export enum ModoImagem {
     SOLID="solid"
 }
 
+enum TipoTransformacao {
+    ROTACIONAR=1,
+    ESPELHAR=2
+}
+
 function em_radianos(angulo_em_graus: number) {
     return angulo_em_graus * Math.PI / 180
+}
+
+class Transformacao {
+
+    tipoTransformacao: TipoTransformacao;
+    args: Array<any>;
+
+    constructor(tipoTransformacao: TipoTransformacao, args: Array<any>) {
+        this.tipoTransformacao = tipoTransformacao;
+        this.args = args;
+    }
 }
 
 export abstract class Imagem {
 
     largura: number;
     altura: number;
-    angulo: number;
-    espelhado: boolean;
+    transformacoes: Array<Transformacao>;
 
     constructor(largura: number, altura: number, angulo: number) {
         this.largura = largura;
         this.altura = altura;
-        this.angulo = angulo;
-        this.espelhado = false;
+        this.transformacoes = [];
     }
     
     abstract desenha(x?: number|null, y?: number|null): void;
+
+     /**
+     * Realiza a rotação da imagem no canvas
+     * @param angulo 
+     * @returns 
+     */
+    aplicarRotacao(angulo: number, x: number, y: number): void {
+
+        let ctx = canvas!.getContext("2d");
+        ctx!.save()
+        ctx!.translate(x, y);
+        ctx!.rotate(em_radianos(angulo));
+        ctx!.translate(-x, -y);
+    }
+
+    /**
+     * Realiza o espelhamento da imagem no canvas
+     * @returns 
+     */
+    aplicarEspelhamento(x: number, y: number): void {
+
+        let ctx = canvas!.getContext("2d");
+        ctx!.save()
+        ctx!.translate(x + this.largura/2, y - this.altura/2);
+        ctx!.scale(-1,1)
+        ctx!.translate(-x - this.largura/2, -y - this.altura/2);
+    }
+
+    /**
+     * Função que realiza transformações (rotações, espelhamento) na imagem
+     * @param x 
+     * @param y 
+     */
+    aplicarTransformacoes(x: number, y: number) {
+    
+        for (let t of this.transformacoes) {
+            if (t.tipoTransformacao == TipoTransformacao.ROTACIONAR) {
+                let angulo = t.args[0]
+                this.aplicarRotacao(angulo, x!, y!)
+            } else if (t.tipoTransformacao == TipoTransformacao.ESPELHAR) {
+                this.aplicarEspelhamento(x!, y!)
+            }
+        }
+
+    }
 
     redimensionar(proporcao: number) {
         return Object.assign(Object.create(this), 
@@ -35,13 +94,25 @@ export abstract class Imagem {
             })
     }
 
-    rotacionar(angulo: number): Imagem {
-        return Object.assign(Object.create(this), {...this, angulo: this.angulo + angulo})
+    rotacionar(angulo: number) {
+        return Object.assign(Object.create(this), 
+            {
+                transformacoes: this.transformacoes.concat(
+                    [new Transformacao(TipoTransformacao.ROTACIONAR, [angulo])]
+                    )
+            })
     }
 
-    espelhar(): Imagem {
-        return Object.assign(Object.create(this), {...this, espelhado: !this.espelhado})
+    espelhar() {
+        return Object.assign(Object.create(this), 
+            {
+                transformacoes: this.transformacoes.concat(
+                    [new Transformacao(TipoTransformacao.ESPELHAR, [])]
+                    )
+            })
     }
+
+   
 
 }
 
@@ -59,10 +130,8 @@ class FolhaTransparente extends Imagem {
 
         let ctx = canvas!.getContext("2d");
         ctx!.save();
-        ctx!.translate(x-this.largura/2, y-this.altura/2);
+        ctx!.translate(x - this.largura/2, y - this.altura/2);
     }
-
-    
 }
 
 class CenaVazia extends Imagem {
@@ -99,23 +168,7 @@ class ImagemComposta extends Imagem {
         this.imagemFundo.desenha(x, y);
         this.imagemFrente.desenha(this.x, this.y);
     }
-
-    redimensionar(proporcao: number) {
-        return Object.assign(Object.create(this), {
-            ...super.redimensionar(proporcao),
-            imagemFundo: this.imagemFundo.redimensionar(proporcao),
-            imagemFrente: this.imagemFrente.redimensionar(proporcao)
-        })//TODO: criar versão que redimensiona considerando o distanciamento dos objetos
-    }
-
-    rotacionar(angulo: number): Imagem {
-        return Object.assign(Object.create(this), {
-            ...super.rotacionar(angulo),
-            imagemFundo: this.imagemFundo.rotacionar(angulo),
-            imagemFrente: this.imagemFrente.rotacionar(angulo)
-        })//TODO: criar versão que redimensiona considerando o distanciamento dos objetos
-    }
-
+    
 }
 
 abstract class RetLike extends Imagem {
@@ -138,16 +191,10 @@ class Retangulo extends RetLike {
         x = x == null? canvas!.width/2: x;
         y = y == null? canvas!.height/2: y;
 
-        let ctx = canvas!.getContext("2d");
-        ctx!.save()
-        ctx!.translate(x, y);
-        ctx!.rotate(em_radianos(this.angulo));
-        ctx!.translate(-this.largura / 2, -this.altura / 2);
+        this.aplicarTransformacoes(x, y);
 
-        if (this.espelhado) {
-            ctx!.translate(this.largura, 0);
-            ctx!.scale(-1,1)
-        }
+        let ctx = canvas!.getContext("2d");
+        ctx!.translate(x - this.largura / 2, y - this.altura / 2);
 
         if (this.modo == ModoImagem.OUTLINE) {
             ctx!.strokeStyle = this.cor;
@@ -168,16 +215,12 @@ class Elipse extends RetLike {
         x = x == null? canvas!.width/2: x;
         y = y == null? canvas!.height/2: y;
 
-        let ctx = canvas!.getContext("2d");
-        ctx!.beginPath();
-
-        if (this.espelhado) {
-            ctx!.translate(this.largura, 0);
-            ctx!.scale(-1,1)
-        }
+        this.aplicarTransformacoes(x, y);      
         
+        let ctx = canvas!.getContext("2d");
+        ctx!.translate(x - this.largura / 2, y - this.altura / 2);
            
-        ctx!.ellipse(x, y, this.largura/2, this.altura/2, em_radianos(this.angulo), 0, 2*Math.PI);
+        ctx!.ellipse(x, y, this.largura/2, this.altura/2, 0, 0, 2*Math.PI);
         if (this.modo == ModoImagem.OUTLINE) {         
             ctx!.strokeStyle = this.cor;
             ctx!.stroke();
@@ -190,6 +233,7 @@ class Elipse extends RetLike {
 
 
 class ImagemDeArquivo extends Imagem {
+
     src: string;
     img: HTMLImageElement;
 
@@ -200,17 +244,15 @@ class ImagemDeArquivo extends Imagem {
         this.img.src = this.src
     }
 
-    private desenha_rotacionando(x:number, y:number) {
-        let ctx = canvas!.getContext("2d");
-        ctx!.save()    
-        ctx!.translate(x, y);
-        ctx!.rotate(em_radianos(this.angulo));
-        ctx!.translate(-this.largura / 2, -this.altura / 2);    
+    private desenha_imagem(x:number, y:number) {
+        x = x == null? canvas!.width/2: x;
+        y = y == null? canvas!.height/2: y;
+
+        this.aplicarTransformacoes(x, y);      
         
-        if (this.espelhado) {
-            ctx!.translate(this.largura, 0)
-            ctx!.scale(-1,1)        
-        } 
+        let ctx = canvas!.getContext("2d");
+        ctx!.translate(x - this.largura / 2, y - this.altura / 2);
+
         ctx!.drawImage(this.img, 0, 0, this.largura, this.altura);
 
         ctx!.restore()
@@ -221,18 +263,18 @@ class ImagemDeArquivo extends Imagem {
         y = y == null? canvas!.height/2: y;
 
         if (this.img.complete) { 
-            this.desenha_rotacionando(x, y);
+            this.desenha_imagem(x, y);
         } else {
             this.img.onload = () => {
-                this.desenha_rotacionando(x!, y!);
+                this.desenha_imagem(x!, y!);
             };
         }
     }
-
 }
 
 
 class TextoImagem extends Imagem {
+
     texto: string;
     fonte: string;
     tamanho: string;
