@@ -1,5 +1,6 @@
-import { Imagem, carregarImagem, cenaVazia, colocarImagem, espelhar } from "../../../lib/image"
-import { bigBang } from "../../../lib/universe";
+import { Imagem, carregarImagem, cenaVazia, colocarImagem, espelhar, redimensionar } from "../../../lib/image"
+import { reactor } from "../../../lib/universe";
+import { testes } from "../../../lib/utils";
 
 // CONSTANTES:
 
@@ -11,7 +12,7 @@ const TELA = cenaVazia(LARGURA, ALTURA)
 const IMG_VACA_INO = carregarImagem("vaca-ino.png", 100, 70);
 const IMG_VACA_VORTANO = espelhar(IMG_VACA_INO);
 
-const IMG_CC_INO = carregarImagem("cc-ino.png", 300, 200);
+const IMG_CC_INO = redimensionar(carregarImagem("chupacabra.png", 300, 200), 0.5);
 const IMG_CC_VORTANO = espelhar(IMG_CC_INO);
 
 
@@ -51,7 +52,8 @@ function makeVaca(x: number, y: number, dx: number, dy: number): Vaca {
 }
 
 // EXEMPLOS:
-const VACA_INICIAL = makeVaca(LIMITE_ESQUERDA_VACA, Y_INICIAL_VACA, 3, 0)
+const VACA_INICIAL = makeVaca(LIMITE_ESQUERDA_VACA, Y_INICIAL_VACA, DX, 0)
+const VACA_INICIAL2 = makeVaca(LIMITE_ESQUERDA_VACA + DX, Y_INICIAL_VACA, DX, 0)
 const VACA0 = makeVaca(LIMITE_ESQUERDA_VACA, Y_INICIAL_VACA, 3, 4)
 const VACA1 = makeVaca(LIMITE_ESQUERDA_VACA + 3, Y_INICIAL_VACA + 4, 3, 4)
 // const VACA_MEIO = (x: LARGURA/2, y: 0, dx: 3, dy:0}
@@ -78,8 +80,9 @@ function makeChupacabra(x: number, y: number, dy: number): Chupacabra {
 
 // EXEMPLOS:
 const CC_INICIAL = makeChupacabra(X_CC, LIMITE_CIMA_CC, 3)
+const CC_INICIAL2 = makeChupacabra(X_CC, LIMITE_CIMA_CC + 3, 3)
 const CC_MEIO = makeChupacabra(X_CC, ALTURA / 2, 3)
-const CC_FIM = makeChupacabra(X_CC, LIMITE_BAIXO_CC, 3)
+const CC_FIM = makeChupacabra(X_CC, LIMITE_BAIXO_CC+1, 3)
 const CC_VIRANDO = makeChupacabra(X_CC, LIMITE_BAIXO_CC, -3)
 const CC_VOLTANDO = makeChupacabra(X_CC, ALTURA / 2, -3)
 
@@ -91,7 +94,6 @@ const CC_VOLTANDO = makeChupacabra(X_CC, ALTURA / 2, -3)
  * interp. Um jogo é composto por uma vaca, vários chupacabras,
  * e uma flag (game_over) que indica se o jogo está acontecendo
  * ou nao
-Exemplos:
  */
 interface Jogo {
     vaca: Vaca,
@@ -99,7 +101,13 @@ interface Jogo {
     gameOver: boolean
 }
 
+function makeJogo(vaca: Vaca,cc: Chupacabra, gameOver: boolean) {
+    return {vaca: vaca, cc: cc, gameOver: gameOver}
+}
 
+// EXEMPLOS:
+const JOGO_INICIAL = makeJogo(VACA_INICIAL, CC_INICIAL, false);
+const JOGO_INICIAL2 = makeJogo(VACA_INICIAL2, CC_INICIAL2, false);
 
 
 /// FUNCOES
@@ -125,7 +133,7 @@ function moveVaca(vaca: Vaca): Vaca {
     }
     return { ...vaca, x: vaca.x + vaca.dx, y: vaca.y + vaca.dy }
 }
-if (process.env.NODE_ENV === 'test') {
+testes(() => {
     describe('testes de moveVaca', () => {
             test('move vaca inicial', () => {
                 expect(moveVaca(VACA0)).toStrictEqual(VACA1);
@@ -146,7 +154,7 @@ if (process.env.NODE_ENV === 'test') {
                     .toStrictEqual(makeVaca(LARGURA/2, LIMITE_CIMA_VACA, 0, 3));
             });
         });
-}
+})
 
 
 /**
@@ -155,16 +163,16 @@ if (process.env.NODE_ENV === 'test') {
  * @returns Imagem
  */
 function desenhaVaca(vaca: Vaca): Imagem {
-    return colocarImagem(IMG_VACA_INO, vaca.x, vaca.y, TELA);
+    return colocarImagem(vaca.dx < 0? IMG_VACA_VORTANO: IMG_VACA_INO, vaca.x, vaca.y, TELA);
 }
-if (process.env.NODE_ENV === 'test') {
+testes(() => {
     describe('testes de desenhaVaca', () => {
         test('desenha vaca inicial', () => {
             expect(desenhaVaca(VACA0))
                 .toStrictEqual(colocarImagem(IMG_VACA_INO, VACA0.x, VACA0.y, TELA));
         });
     });
-}
+})
 
 
 /**
@@ -189,7 +197,7 @@ function trataTeclaVaca(vaca: Vaca, tecla: string): Vaca {
     }
     return vaca;
 }
-if (process.env.NODE_ENV === 'test') {
+testes(() => {
     describe('testes de trataTeclaVaca', () => {
         test('trata tecla flecha direita quando na horizontal', () => {
             expect(trataTeclaVaca(makeVaca(LARGURA / 2, LIMITE_BAIXO_VACA, -3, 0), "ArrowRight"))
@@ -229,15 +237,95 @@ if (process.env.NODE_ENV === 'test') {
         });
         
     });
+})
+
+
+/**
+ * moveChupacabra: Chupacabra -> Chupacabra
+ * Move o chupacabra a cada tick
+ */
+function moveChupacabra(cc: Chupacabra): Chupacabra {
+    if (cc.y > LIMITE_BAIXO_CC) {
+        return makeChupacabra(cc.x, LIMITE_BAIXO_CC, -cc.dy);
+    }
+    if (cc.y < LIMITE_CIMA_CC) {
+        return makeChupacabra(cc.x, LIMITE_CIMA_CC, -cc.dy);
+    }
+    return makeChupacabra(cc.x, cc.y + cc.dy, cc.dy);
+}
+testes(() => {
+    describe('testes de moveChupacabra', () => {
+            test('move cc inicial', () => {
+                expect(moveChupacabra(CC_INICIAL)).toStrictEqual(CC_INICIAL2);
+            });
+            test('move cc final da tela batendo', () => {
+                expect(moveChupacabra(CC_FIM)).toStrictEqual(CC_VIRANDO);
+            });
+            test('move cc inicio da tela voltando', () => {
+                expect(moveChupacabra(makeChupacabra(X_CC, LIMITE_CIMA_CC-1, -3)))
+                    .toStrictEqual(makeChupacabra(X_CC, LIMITE_CIMA_CC, 3));
+            });
+        });
+});
+
+
+/**
+ * moveJogo: Jogo -> Jogo
+ * Atualiza jogo a cada tick, movendo a vaca e o chupacabra
+ * @param jogo 
+ * @returns Jogo atualizado
+ */
+function moveJogo(jogo: Jogo): Jogo {
+    return makeJogo(
+        moveVaca(jogo.vaca),
+        moveChupacabra(jogo.cc),
+        jogo.gameOver
+    )
+}
+testes(() => {
+    describe('testes de moveJogo', () => {
+            test('move jogo inicial', () => {
+                expect(moveJogo(JOGO_INICIAL)).toStrictEqual(JOGO_INICIAL2);
+            });
+            
+        });
+})
+
+
+/**
+ * desenhaJogo: Jogo -> Imagem
+ * Desenha jogo
+ */
+function desenhaJogo(jogo: Jogo): Imagem {
+    return colocarImagem(
+        IMG_CC_INO, jogo.cc.x, jogo.cc.y, 
+        desenhaVaca(jogo.vaca));
 }
 
+/**
+ * trataTeclaJogo: Jogo, String -> Jogo
+ * Trata eventos de teclado para to o jogo
+ * @param jogo 
+ * @param tecla 
+ */
+function trataTeclaJogo(jogo: Jogo, tecla: String): Jogo {
+    return jogo;
+}
+
+
 function main() {
-    bigBang(VACA_INICIAL,
+    reactor(JOGO_INICIAL,
         {
-            aCadaTick: moveVaca,
-            desenhar: desenhaVaca,
-            quandoTecla: trataTeclaVaca,
+            aCadaTick: moveJogo,
+            desenhar: desenhaJogo,
+            quandoTecla: trataTeclaJogo,
         })
 }
 
 main()  // LEMBRAR: ALTERAR PATH DO SCRIPT NO index.html
+
+// desenhaVaca(VACA_INICIAL).desenha()
+
+// colocarImagem(
+    // IMG_CC_INO, 100, 100, 
+    // desenhaVaca(VACA_INICIAL)).desenha()

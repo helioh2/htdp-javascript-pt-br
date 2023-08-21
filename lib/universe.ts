@@ -24,7 +24,7 @@ const defaultSettings: Settings = {
 }
 
 
-export function bigBang(inic: any, settings: Settings = defaultSettings) {
+export function reactor(inic: any, settings: Settings = defaultSettings) {
 
     Object.keys(defaultSettings).forEach(function (key) {
         if (settings[key] === undefined) {
