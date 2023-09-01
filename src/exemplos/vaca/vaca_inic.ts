@@ -1,7 +1,7 @@
-import { Imagem, carregarImagem, cenaVazia, colocarImagem, espelhar, redimensionar } from "../../../lib/image"
+import { Imagem, carregarImagem, cenaVazia, colocarImagem, espelhar, larguraImagem, redimensionar } from "../../../lib/image"
 import { reactor } from "../../../lib/universe";
 import { testes } from "../../../lib/utils";
-
+import imgVacaInoUrl from "./vaca-ino.png";
 // CONSTANTES:
 
 
@@ -9,18 +9,17 @@ const [LARGURA, ALTURA] = [600, 400]
 
 const TELA = cenaVazia(LARGURA, ALTURA)
  
-const IMG_VACA_INO = carregarImagem("vaca-ino.png", 100, 70);
+const IMG_VACA_INO = carregarImagem(imgVacaInoUrl, 100, 70);
 const IMG_VACA_VORTANO = espelhar(IMG_VACA_INO);
 
 const Y_INICIAL_VACA = ALTURA / 2
 
-const LIMITE_ESQUERDA_VACA = 0 + IMG_VACA_INO.largura / 2
-const LIMITE_DIREITA_VACA = LARGURA - IMG_VACA_INO.largura / 2
-const LIMITE_BAIXO_VACA = ALTURA - IMG_VACA_INO.altura / 2
-const LIMITE_CIMA_VACA = 0 + IMG_VACA_INO.altura / 2
+const LIMITE_ESQUERDA_VACA = 0 + larguraImagem(IMG_VACA_INO) / 2
+const LIMITE_DIREITA_VACA = LARGURA - larguraImagem(IMG_VACA_INO) / 2
+const LIMITE_BAIXO_VACA = ALTURA - larguraImagem(IMG_VACA_INO) / 2
+const LIMITE_CIMA_VACA = 0 + larguraImagem(IMG_VACA_INO) / 2
 
-const DX = 3
-const G = 3
+const DX_PADRAO = 3
 
 
 // DEFINIÇÕES DE DADOS:
@@ -43,8 +42,8 @@ function makeVaca(x: number, y: number, dx: number, dy: number): Vaca {
 
 
 // EXEMPLOS:
-const VACA_INICIAL = makeVaca(LIMITE_ESQUERDA_VACA, Y_INICIAL_VACA, DX, 0)
-const VACA_INICIAL2 = makeVaca(LIMITE_ESQUERDA_VACA + DX, Y_INICIAL_VACA, DX, 0)
+const VACA_INICIAL = makeVaca(LIMITE_ESQUERDA_VACA, Y_INICIAL_VACA, DX_PADRAO, 0)
+const VACA_INICIAL2 = makeVaca(LIMITE_ESQUERDA_VACA + DX_PADRAO, Y_INICIAL_VACA, DX_PADRAO, 0)
 const VACA0 = makeVaca(LIMITE_ESQUERDA_VACA, Y_INICIAL_VACA, 3, 4)
 const VACA1 = makeVaca(LIMITE_ESQUERDA_VACA + 3, Y_INICIAL_VACA + 4, 3, 4)
 // const VACA_MEIO = (x: LARGURA/2, y: 0, dx: 3, dy:0}
@@ -128,16 +127,16 @@ testes(() => {
  */
 function trataTeclaVaca(vaca: Vaca, tecla: string): Vaca {
     if (tecla == "ArrowRight") {
-        return {...vaca, dx: DX, dy: 0}
+        return {...vaca, dx: DX_PADRAO, dy: 0}
     }
     if (tecla == "ArrowLeft") {
-        return {...vaca, dx: -DX, dy: 0}
+        return {...vaca, dx: -DX_PADRAO, dy: 0}
     }
     if (tecla == "ArrowDown") {
-        return {...vaca, dx: 0, dy: DX}
+        return {...vaca, dx: 0, dy: DX_PADRAO}
     }
     if (tecla == "ArrowUp") {
-        return {...vaca, dx: 0, dy: -DX}
+        return {...vaca, dx: 0, dy: -DX_PADRAO}
     }
     return vaca;
 }

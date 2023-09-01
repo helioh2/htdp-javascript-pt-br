@@ -7,7 +7,7 @@ export enum ModoImagem {
     SOLID="solid"
 }
 
-function em_radianos(angulo_em_graus: number) {
+export function em_radianos(angulo_em_graus: number) {
     return angulo_em_graus * Math.PI / 180
 }
 
@@ -46,7 +46,7 @@ export abstract class Imagem {
 }
 
 
-class FolhaTransparente extends Imagem {
+export class FolhaTransparente extends Imagem {
 
     constructor(largura: number, altura: number) {
         super(largura, altura, 0);
@@ -65,7 +65,7 @@ class FolhaTransparente extends Imagem {
     
 }
 
-class CenaVazia extends Imagem {
+export class CenaVazia extends Imagem {
 
 
     constructor(largura: number, altura: number) {
@@ -308,6 +308,14 @@ export function rotacionar(imagem: Imagem, angulo: number) {
 
 export function espelhar(imagem: Imagem) {
     return imagem.espelhar();
+}
+
+export function larguraImagem(imagem: Imagem): number {
+    return imagem.largura;
+}
+
+export function alturaImagem(imagem: Imagem): number {
+    return imagem.altura;
 }
 
 export function folhaTransparente(largura: number, altura: number) {
