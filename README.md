@@ -21,4 +21,4 @@ Está é a versão em Português da API.
 
 Faça um _fork_ do projeto ou baixe-o em sua máquina. Abra a pasta contendo o projeto e rode o comando _npm install_ para instalar as dependências. Em seguida, edite o arquivo src/app.ts para escrever seu programa. Se desejar mudar o arquivo principal, basta alterar o endereço (_path_) do _script_ no arquivo index.html.
 
-Para executar o sistema, rode o comando _npm run serve_ dentro da pasta e acesse _localhost:1234_ no seu _browser_.
+Para executar o sistema, rode o comando _npm run dev_ dentro da pasta e acesse _localhost:5173_ no seu _browser_.

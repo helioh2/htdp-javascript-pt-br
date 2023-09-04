@@ -1,5 +1,5 @@
 import { Imagem, ModoImagem, carregarImagem, cenaVazia, circulo, colocarImagem, elipse, encima, folhaTransparente, lado, quadrado, retangulo, rotacionar, sobrepor, texto } from "../lib/image"
-import { bigBang } from "../lib/universe";
+import { reactor } from "../lib/universe";
 
 
 
@@ -116,7 +116,7 @@ function pararQuando(foguete: number) {
 }
 
 function main() {
-    bigBang(0, 
+    reactor(0, 
         {
             aCadaTick: desce, 
             desenhar: desenhar, 
