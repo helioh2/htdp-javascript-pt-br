@@ -6,6 +6,9 @@ import imgVacaInoUrl from "./vaca-ino.png";
 
 //TESTE
 
+
+// TESTE DO GIT 2
+
 const [LARGURA, ALTURA] = [600, 400]
 
 const TELA = cenaVazia(LARGURA, ALTURA)
