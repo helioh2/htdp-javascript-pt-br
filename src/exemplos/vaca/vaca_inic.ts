@@ -4,6 +4,7 @@ import { testes } from "../../../lib/utils";
 import imgVacaInoUrl from "./vaca-ino.png";
 // CONSTANTES:
 
+//TESTE
 
 const [LARGURA, ALTURA] = [600, 400]
 
