@@ -5,6 +5,10 @@ import imgVacaInoUrl from "./vaca-ino.png";
 import imgCcEsqUrl from "./chupacabra.png";
 // CONSTANTES:
 
+//TESTE
+
+
+// TESTE DO GIT 2
 
 const [LARGURA, ALTURA] = [600, 400]
 
