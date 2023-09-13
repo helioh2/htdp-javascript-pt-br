@@ -1,9 +1,8 @@
-import { Imagem, carregarImagem, cenaVazia, colocarImagem, espelhar, larguraImagem, redimensionar } from "../../../lib/image"
+import { Imagem, alturaImagem, carregarImagem, cenaVazia, colocarImagem, espelhar, larguraImagem, redimensionar, texto } from "../../../lib/image"
 import { reactor } from "../../../lib/universe";
 import { testes } from "../../../lib/utils";
 import imgVacaInoUrl from "./vaca-ino.png";
-// CONSTANTES:
-
+import imgCCUrl from "./chupacabra.png";
 
 const [LARGURA, ALTURA] = [600, 400]
 
@@ -11,15 +10,25 @@ const TELA = cenaVazia(LARGURA, ALTURA)
  
 const IMG_VACA_INO = carregarImagem(imgVacaInoUrl, 100, 70);
 const IMG_VACA_VORTANO = espelhar(IMG_VACA_INO);
+const IMG_CC_ESQ = carregarImagem(imgCCUrl, 95, 100);
+const IMG_CC_DIR = espelhar(IMG_CC_ESQ);
 
 const Y_INICIAL_VACA = ALTURA / 2
 
 const LIMITE_ESQUERDA_VACA = 0 + larguraImagem(IMG_VACA_INO) / 2
 const LIMITE_DIREITA_VACA = LARGURA - larguraImagem(IMG_VACA_INO) / 2
-const LIMITE_BAIXO_VACA = ALTURA - larguraImagem(IMG_VACA_INO) / 2
-const LIMITE_CIMA_VACA = 0 + larguraImagem(IMG_VACA_INO) / 2
+const LIMITE_BAIXO_VACA = ALTURA - alturaImagem(IMG_VACA_INO) / 2
+const LIMITE_CIMA_VACA = 0 + alturaImagem(IMG_VACA_INO) / 2
+
+const LIMITE_ESQUERDA_CC = 0 + larguraImagem(IMG_CC_ESQ) / 2
+const LIMITE_DIREITA_CC = LARGURA - larguraImagem(IMG_CC_ESQ) / 2
+const LIMITE_BAIXO_CC = ALTURA - alturaImagem(IMG_CC_ESQ) / 2
+const LIMITE_CIMA_CC = 0 + alturaImagem(IMG_CC_ESQ) / 2
 
 const DX_PADRAO = 3
+const DX_CC = 0
+
+const TEXTO_GAME_OVER = texto("GAME OVER", "Arial", "50px");
 
 
 // DEFINIÇÕES DE DADOS:
@@ -39,17 +48,73 @@ function makeVaca(x: number, y: number, dx: number, dy: number): Vaca {
  * interp. representa a posicao x e y da vaca, e o deslocamento
  * a cada tick no eixo x e y, chamados de dx e dy
  */
-
-
 // EXEMPLOS:
 const VACA_INICIAL = makeVaca(LIMITE_ESQUERDA_VACA, Y_INICIAL_VACA, DX_PADRAO, 0)
 const VACA_INICIAL2 = makeVaca(LIMITE_ESQUERDA_VACA + DX_PADRAO, Y_INICIAL_VACA, DX_PADRAO, 0)
 const VACA0 = makeVaca(LIMITE_ESQUERDA_VACA, Y_INICIAL_VACA, 3, 4)
 const VACA1 = makeVaca(LIMITE_ESQUERDA_VACA + 3, Y_INICIAL_VACA + 4, 3, 4)
-// const VACA_MEIO = (x: LARGURA/2, y: 0, dx: 3, dy:0}
+const VACA_MEIO = {x: LARGURA/2, y: Y_INICIAL_VACA, dx: 3, dy:0}
 const VACA_FIM = makeVaca(LIMITE_DIREITA_VACA + 1, LIMITE_BAIXO_VACA, 3, 0)
 const VACA_VIRANDO = makeVaca(LIMITE_DIREITA_VACA, LIMITE_BAIXO_VACA, -3, 0)
 const VACA_VORTANO = makeVaca(LARGURA / 2, LIMITE_BAIXO_VACA, -3, 0)
+
+
+//------------
+
+interface Chupacabra {
+    x: number,
+    y: number,
+    dy: number
+}
+function makeChupacabra(x: number, y: number, dy: number): Chupacabra {
+    return { x: x, y: y, dy: dy };
+}
+/**
+ * Como criar objeto: makeChupacabra(Int, Int, Int) ou {x: Int, y: Int, dy: Int}
+ * interp. representa a posicao x e y de um cc, e o deslocamento
+ * a cada tick no eixo y, chamado de dy
+ */
+//EXEMPLOS:
+
+const CC_SEM_MAKE = {
+    x: 100,
+    y: 150,
+    dy: 5
+}
+const CC_INICIAL = makeChupacabra(LARGURA/2, LIMITE_CIMA_CC, 2);
+const CC_INICIAL_PROX = makeChupacabra(LARGURA/2, LIMITE_CIMA_CC+2, 2);
+const CC_INICIAL_PROX_PROX = makeChupacabra(LARGURA/2, LIMITE_CIMA_CC+2+2, 2);
+const CC_MEIO = makeChupacabra(LARGURA/2, ALTURA/2, 2);
+const CC_BAIXO = makeChupacabra(LARGURA/2, LIMITE_BAIXO_CC+1, 2);
+const CC_BAIXO_VIRANDO = makeChupacabra(LARGURA/2, LIMITE_BAIXO_CC, -2);
+const CC_BAIXO_VIRANDO_PROX = makeChupacabra(LARGURA/2, LIMITE_BAIXO_CC-2, -2);
+const CC_CIMA = makeChupacabra(LARGURA/2, LIMITE_CIMA_CC-1, -2);
+const CC_CIMA_VIRANDO = CC_INICIAL
+
+
+//--------
+
+interface Jogo {
+    vaca: Vaca,
+    cc: Chupacabra,
+    pontuacao: number,
+    gameOver: boolean
+}
+function makeJogo(vaca: Vaca, cc: Chupacabra, pontuacao: number, gameOver: boolean) {
+    return {vaca: vaca, cc: cc, pontuacao: pontuacao, gameOver: gameOver};
+}
+/**
+ * Cria-se um jogo usando: makeJogo(Vaca, Chupacabra, number, boolean)
+ * ou {vaca: Vaca, cc: Chupacabra, pontuacao: number, gameOver: boolean}
+ * interp. representa o jogo contendo uma vaca, um cc, pontuacao
+ * e flag de game over 
+ */
+// EXEMPLOS
+const JOGO_INICIAL = makeJogo(VACA_INICIAL, CC_INICIAL, 0, false);
+const JOGO_INICIAL_PROX = makeJogo(VACA_INICIAL2, CC_INICIAL_PROX, 0+1, false);
+const JOGO_COLIDINDO = makeJogo(VACA_MEIO, CC_MEIO, 500, false);
+const JOGO_GAME_OVER= makeJogo(VACA_MEIO, CC_MEIO, 500, true);
+const JOGO_GAME_OVER_PROX = JOGO_GAME_OVER;
 
 
 
@@ -192,4 +257,10 @@ function main() {
         })
 }
 
-main()  // LEMBRAR: ALTERAR PATH DO SCRIPT NO index.html
+// main()  // LEMBRAR: ALTERAR PATH DO SCRIPT NO index.html
+
+
+TEXTO_GAME_OVER.desenha();
+
+// colocarImagem(IMG_CC_ESQ, 100, 100, TELA).desenha();
+// IMG_CC_ESQ.desenha();
