@@ -248,19 +248,95 @@ testes(() => {
 })
 
 
+/**
+ * moveChupacabra: Chupacabra -> Chupacabra
+ * Realiza o movimento do chupacabra
+ */
+function moveChupacabra(cc: Chupacabra): Chupacabra {
+    if (cc.y > LIMITE_BAIXO_CC) {
+        return {...cc, y: LIMITE_BAIXO_CC, dy: -cc.dy}
+    }
+    if (cc.y < LIMITE_CIMA_CC) {
+        return {...cc, y: LIMITE_CIMA_CC, dy: -cc.dy}
+    }
+    return {...cc, y: cc.y + cc.dy}
+}
+testes(() => {
+    describe('testes de moveChupacabra', () => {
+            test('move cc inicial', () => {
+                expect(moveChupacabra(CC_INICIAL)).toStrictEqual(CC_INICIAL_PROX);
+            });
+            test('move cc inicial prox', () => {
+                expect(moveChupacabra(CC_INICIAL_PROX)).toStrictEqual(CC_INICIAL_PROX_PROX);
+            });
+            test('move cc limite baixo', () => {
+                expect(moveChupacabra(CC_BAIXO)).toStrictEqual(CC_BAIXO_VIRANDO);
+            });
+            test('move cc limite baixo virado andando pra cima', () => {
+                expect(moveChupacabra(CC_BAIXO_VIRANDO)).toStrictEqual(CC_BAIXO_VIRANDO_PROX);
+            });
+            test('move cc limite cima', () => {
+                expect(moveChupacabra(CC_CIMA)).toStrictEqual(CC_CIMA_VIRANDO);
+            });
+        });
+})
+
+
+/**
+ * atualizaJogo: Jogo -> Jogo
+ * Atualiza o jogo a cada tick.
+ * TODO
+ */
+function atualizaJogo(jogo: Jogo): Jogo {
+    let vacaMovida = moveVaca(jogo.vaca);
+    let ccMovido = moveChupacabra(jogo.cc);
+    //  return makeJogo(vacaMovida, jogo.cc, jogo.pontuacao, jogo.gameOver)
+    return {...jogo, vaca: vacaMovida, cc: ccMovido, pontuacao: jogo.pontuacao + 1};
+}
+testes(() => {
+    describe("Testes do atualizaJogo", () => {
+        test("Jogo tranquilo, sem colisao", () => {
+            expect(atualizaJogo(JOGO_INICIAL)).toStrictEqual(JOGO_INICIAL_PROX);
+        })
+        // TODO: testes de colisao
+    })
+})
+
+
+/**
+ * desenhaJogo: Jogo -> Imagem
+ * Desenha o jogo.
+ * TODO
+ */
+function desenhaJogo(jogo: Jogo): Imagem {
+    return colocarImagem(IMG_CC_ESQ, jogo.cc.x, jogo.cc.y, desenhaVaca(jogo.vaca));
+}
+
+
+/**
+ * trataTeclaJogo: Jogo, String -> Jogo
+ * Trata os eventos de tecla.
+ * TODO
+ */
+function trataTeclaJogo(jogo: Jogo, tecla: string): Jogo {
+    return jogo;
+}
+
+
+
 function main() {
-    reactor(VACA_INICIAL,
+    reactor(JOGO_INICIAL,   // Jogo
         {
-            aCadaTick: moveVaca,
-            desenhar: desenhaVaca,
-            quandoTecla: trataTeclaVaca,
+            aCadaTick: atualizaJogo,   // Jogo -> Jogo
+            desenhar: desenhaJogo,  // Jogo -> Imagem
+            quandoTecla: trataTeclaJogo,  // Jogo, String -> Jogo
         })
 }
 
-// main()  // LEMBRAR: ALTERAR PATH DO SCRIPT NO index.html
+main()  // LEMBRAR: ALTERAR PATH DO SCRIPT NO index.html
 
 
-TEXTO_GAME_OVER.desenha();
+// TEXTO_GAME_OVER.desenha();
 
 // colocarImagem(IMG_CC_ESQ, 100, 100, TELA).desenha();
 // IMG_CC_ESQ.desenha();
