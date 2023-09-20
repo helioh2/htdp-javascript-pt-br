@@ -13,17 +13,26 @@ const IMG_VACA_VORTANO = espelhar(IMG_VACA_INO);
 const IMG_CC_ESQ = carregarImagem(imgCCUrl, 95, 100);
 const IMG_CC_DIR = espelhar(IMG_CC_ESQ);
 
+const LARGURA_IMG_VACA = larguraImagem(IMG_VACA_INO);
+const ALTURA_IMG_VACA = alturaImagem(IMG_VACA_INO);
+
+const LARGURA_IMG_CC = larguraImagem(IMG_CC_ESQ);
+const ALTURA_IMG_CC = alturaImagem(IMG_CC_ESQ);
+
 const Y_INICIAL_VACA = ALTURA / 2
 
-const LIMITE_ESQUERDA_VACA = 0 + larguraImagem(IMG_VACA_INO) / 2
-const LIMITE_DIREITA_VACA = LARGURA - larguraImagem(IMG_VACA_INO) / 2
-const LIMITE_BAIXO_VACA = ALTURA - alturaImagem(IMG_VACA_INO) / 2
-const LIMITE_CIMA_VACA = 0 + alturaImagem(IMG_VACA_INO) / 2
+const RAIO_COLISAO_VACA = (LARGURA_IMG_VACA + ALTURA_IMG_VACA)/2 / 3
+const RAIO_COLISAO_CC = (LARGURA_IMG_CC + ALTURA_IMG_CC)/2 / 3
 
-const LIMITE_ESQUERDA_CC = 0 + larguraImagem(IMG_CC_ESQ) / 2
-const LIMITE_DIREITA_CC = LARGURA - larguraImagem(IMG_CC_ESQ) / 2
-const LIMITE_BAIXO_CC = ALTURA - alturaImagem(IMG_CC_ESQ) / 2
-const LIMITE_CIMA_CC = 0 + alturaImagem(IMG_CC_ESQ) / 2
+const LIMITE_ESQUERDA_VACA = 0 + LARGURA_IMG_VACA / 2
+const LIMITE_DIREITA_VACA = LARGURA - LARGURA_IMG_VACA / 2
+const LIMITE_BAIXO_VACA = ALTURA - ALTURA_IMG_VACA / 2
+const LIMITE_CIMA_VACA = 0 + ALTURA_IMG_VACA / 2
+
+const LIMITE_ESQUERDA_CC = 0 + LARGURA_IMG_CC / 2
+const LIMITE_DIREITA_CC = LARGURA - LARGURA_IMG_CC / 2
+const LIMITE_BAIXO_CC = ALTURA - ALTURA_IMG_CC / 2
+const LIMITE_CIMA_CC = 0 + ALTURA_IMG_CC / 2
 
 const DX_PADRAO = 3
 const DX_CC = 0
@@ -57,6 +66,7 @@ const VACA_MEIO = {x: LARGURA/2, y: Y_INICIAL_VACA, dx: 3, dy:0}
 const VACA_FIM = makeVaca(LIMITE_DIREITA_VACA + 1, LIMITE_BAIXO_VACA, 3, 0)
 const VACA_VIRANDO = makeVaca(LIMITE_DIREITA_VACA, LIMITE_BAIXO_VACA, -3, 0)
 const VACA_VORTANO = makeVaca(LARGURA / 2, LIMITE_BAIXO_VACA, -3, 0)
+
 
 
 //------------
@@ -116,6 +126,32 @@ const JOGO_COLIDINDO = makeJogo(VACA_MEIO, CC_MEIO, 500, false);
 const JOGO_GAME_OVER= makeJogo(VACA_MEIO, CC_MEIO, 500, true);
 const JOGO_GAME_OVER_PROX = JOGO_GAME_OVER;
 
+
+const VACA_COLIDINDO_DIAG1 = makeVaca(LARGURA/2 - RAIO_COLISAO_VACA - RAIO_COLISAO_CC + 3, Y_INICIAL_VACA, 3, 0); //um pouco antes do meio, à esquerda
+const CC_COLIDINDO_DIAG1 = makeChupacabra(LARGURA/2, ALTURA/2 - RAIO_COLISAO_CC - RAIO_COLISAO_VACA + 3, 3);  // um pouco antes do meio, acima
+
+const JOGO_COLIDINDO_DIAG1 = makeJogo(VACA_COLIDINDO_DIAG1, CC_COLIDINDO_DIAG1, 100, false);
+const JOGO_COLIDINDO_DIAG1_PROX = makeJogo(VACA_COLIDINDO_DIAG1, CC_COLIDINDO_DIAG1, 100, true);
+
+const SCREENSHOT_COLIDINDO_DIAG1 = desenhaJogo(JOGO_COLIDINDO_DIAG1);
+
+
+const VACA_COLIDINDO_FRENTE = makeVaca(LARGURA/2 - (RAIO_COLISAO_VACA + RAIO_COLISAO_CC) + 3, Y_INICIAL_VACA, 3, 0); //um pouco antes do meio, à esquerda
+const CC_COLIDINDO_FRENTE = makeChupacabra(LARGURA/2 + RAIO_COLISAO_CC - 3, ALTURA/2, 3);  // EXATAMENTE NO MEIO NO y
+
+const JOGO_COLIDINDO_FRENTE = makeJogo(VACA_COLIDINDO_FRENTE, CC_COLIDINDO_FRENTE, 100, false);
+const JOGO_COLIDINDO_FRENTE_PROX = makeJogo(VACA_COLIDINDO_FRENTE, CC_COLIDINDO_FRENTE, 100, true);
+
+const SCREENSHOT_COLIDINDO_FRENTE = desenhaJogo(JOGO_COLIDINDO_FRENTE);
+
+
+const VACA_COLIDINDO_ATRAS = makeVaca(LARGURA/2 + RAIO_COLISAO_VACA + RAIO_COLISAO_CC - 3, Y_INICIAL_VACA, 3, 0); //um pouco antes do meio, à esquerda
+const CC_COLIDINDO_ATRAS = makeChupacabra(LARGURA/2 - RAIO_COLISAO_CC + 3, ALTURA/2, 3);  // EXATAMENTE NO MEIO NO y
+
+const JOGO_COLIDINDO_ATRAS = makeJogo(VACA_COLIDINDO_ATRAS, CC_COLIDINDO_ATRAS, 100, false);
+const JOGO_COLIDINDO_ATRAS_PROX = makeJogo(VACA_COLIDINDO_ATRAS, CC_COLIDINDO_ATRAS, 100, true);
+
+const SCREENSHOT_COLIDINDO_ATRAS = desenhaJogo(JOGO_COLIDINDO_ATRAS);
 
 
 /// FUNCOES
@@ -283,11 +319,66 @@ testes(() => {
 
 
 /**
+ * distancia: number, number, number, number -> number
+ * Calcula a distância euclidiana entre os dois pontos
+ */
+function distancia(x1: number, y1: number, x2: number, y2: number): number {
+    return Math.sqrt((x2-x1)**2 + (y2-y1)**2);
+}
+testes(() => {
+    describe("testes distancia", () => {
+        test("teste 1", () => {
+            expect(distancia(0, 0, 3, 4)).toStrictEqual(5);
+        })
+        test("teste 2", () => {
+            expect(distancia(1, 2, 4, 6)).toStrictEqual(5);
+        })
+        
+    })
+})
+
+
+/**
+ * colidindo: Vaca, Chupacabra -> bool
+ * Verifica se a vaca e o chupacabra se colidiram
+ */
+function colidindo(vaca: Vaca, cc: Chupacabra): boolean {
+    let distancia_vaca_cc = distancia(vaca.x, vaca.y, cc.x, cc.y);
+    if (distancia_vaca_cc < (RAIO_COLISAO_VACA + RAIO_COLISAO_CC)*(1.5)) {
+        return true;
+    }
+    return false;
+}
+testes(() => {
+    describe("testes colidindo", () => {
+        test("sem colisao", () => {
+            expect(colidindo(VACA_INICIAL, CC_INICIAL)).toStrictEqual(false);
+        })
+        test("colisao diagonal 1", () => {
+            expect(colidindo(VACA_COLIDINDO_DIAG1, CC_COLIDINDO_DIAG1)).toStrictEqual(true);
+        })
+        test("colisao de frente", () => {
+            expect(colidindo(VACA_COLIDINDO_FRENTE, CC_COLIDINDO_FRENTE)).toStrictEqual(true);
+        })
+        test("colisao de trás", () => {
+            expect(colidindo(VACA_COLIDINDO_ATRAS, CC_COLIDINDO_ATRAS)).toStrictEqual(true);
+        })
+    })
+})
+
+
+/**
  * atualizaJogo: Jogo -> Jogo
  * Atualiza o jogo a cada tick.
  * TODO
  */
 function atualizaJogo(jogo: Jogo): Jogo {
+
+    // tratamento da colisão
+    if (colidindo(jogo.vaca, jogo.cc)){
+        return {...jogo, gameOver: true}
+    }
+
     let vacaMovida = moveVaca(jogo.vaca);
     let ccMovido = moveChupacabra(jogo.cc);
     //  return makeJogo(vacaMovida, jogo.cc, jogo.pontuacao, jogo.gameOver)
@@ -298,7 +389,15 @@ testes(() => {
         test("Jogo tranquilo, sem colisao", () => {
             expect(atualizaJogo(JOGO_INICIAL)).toStrictEqual(JOGO_INICIAL_PROX);
         })
-        // TODO: testes de colisao
+        test("Jogo com colisao diagonal", () => {
+            expect(atualizaJogo(JOGO_COLIDINDO_DIAG1)).toStrictEqual(JOGO_COLIDINDO_DIAG1_PROX);
+        })
+        test("Jogo com colisao frente", () => {
+            expect(atualizaJogo(JOGO_COLIDINDO_FRENTE)).toStrictEqual(JOGO_COLIDINDO_FRENTE_PROX);
+        })
+        test("Jogo com colisao atrás", () => {
+            expect(atualizaJogo(JOGO_COLIDINDO_ATRAS)).toStrictEqual(JOGO_COLIDINDO_ATRAS_PROX);
+        })
     })
 })
 
@@ -306,10 +405,18 @@ testes(() => {
 /**
  * desenhaJogo: Jogo -> Imagem
  * Desenha o jogo.
- * TODO
  */
 function desenhaJogo(jogo: Jogo): Imagem {
-    return colocarImagem(IMG_CC_ESQ, jogo.cc.x, jogo.cc.y, desenhaVaca(jogo.vaca));
+    if (jogo.gameOver) {
+        return colocarImagem(TEXTO_GAME_OVER, LARGURA/4, ALTURA/2, TELA);
+    }
+    //else
+    return colocarImagem(
+        jogo.cc.x >= jogo.vaca.x ? IMG_CC_ESQ : IMG_CC_DIR, 
+        jogo.cc.x, 
+        jogo.cc.y, 
+        desenhaVaca(jogo.vaca)
+        );
 }
 
 
@@ -319,8 +426,28 @@ function desenhaJogo(jogo: Jogo): Imagem {
  * TODO
  */
 function trataTeclaJogo(jogo: Jogo, tecla: string): Jogo {
-    return jogo;
+    if (tecla == "r" && jogo.gameOver) {
+        return JOGO_INICIAL;
+    }
+    let vacaAtualizada = trataTeclaVaca(jogo.vaca, tecla);
+    return {...jogo, vaca: vacaAtualizada};
 }
+testes(() => {
+    describe("Testes trata tecla", () => {
+        test("Quando tecla restart e game over", () => {
+            expect(trataTeclaJogo(JOGO_GAME_OVER, "r"))
+            .toStrictEqual(JOGO_INICIAL);
+        })
+        test("Quando tecla restart sem game over", () => {
+            expect(trataTeclaJogo(JOGO_INICIAL_PROX, "r"))
+            .toStrictEqual(JOGO_INICIAL_PROX);
+        })
+        test("Quando outra tecla e game over", () => {
+            expect(trataTeclaJogo(JOGO_GAME_OVER, "a"))
+            .toStrictEqual(JOGO_GAME_OVER);
+        })
+    })
+})
 
 
 
@@ -334,8 +461,8 @@ function main() {
 }
 
 main()  // LEMBRAR: ALTERAR PATH DO SCRIPT NO index.html
-
-
+// SCREENSHOT_COLIDINDO_ATRAS.desenha();
+// SCREENSHOT_COLIDINDO_ATRAS.desenha();
 // TEXTO_GAME_OVER.desenha();
 
 // colocarImagem(IMG_CC_ESQ, 100, 100, TELA).desenha();
