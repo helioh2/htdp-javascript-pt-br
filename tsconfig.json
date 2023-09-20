@@ -17,7 +17,8 @@
       "strict": false,
       "noUnusedLocals": false,
       "noUnusedParameters": false,
-      "noFallthroughCasesInSwitch": true
+      "noFallthroughCasesInSwitch": true,
+      "strictNullChecks": true
     },
     "include": ["src", "@types/png.d.ts"]
   }
