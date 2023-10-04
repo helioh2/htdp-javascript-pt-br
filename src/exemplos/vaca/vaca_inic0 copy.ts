@@ -39,6 +39,8 @@ const DX_CC = 0
 
 const TEXTO_GAME_OVER = texto('GAME OVER', 'arial', '50px', 'red')
 
+const FPS = 60
+
 // DEFINIÇÕES DE DADOS:
 
 interface Vaca {
@@ -103,7 +105,6 @@ const CC_UM_QUARTO_BAIXO_PROX = makeChupacabra(LARGURA / 4, LIMITE_BAIXO_CC - 1,
 const CC_TRES_QUARTOS_MEIO = makeChupacabra(LARGURA * 3 / 4, ALTURA / 2, 4)
 const CC_TRES_QUARTOS_MEIO_PROX = makeChupacabra(LARGURA * 3 / 4, ALTURA / 2 + 4, 4)
 
-
 // --------
 
 interface Jogo {
@@ -111,50 +112,53 @@ interface Jogo {
   ccs: Chupacabra[]
   pontuacao: number
   gameOver: boolean
+  cont: number
 }
-function makeJogo(vaca: Vaca, ccs: Chupacabra[], pontuacao: number, gameOver: boolean) {
-  return { vaca, ccs, pontuacao, gameOver }
+function makeJogo(vaca: Vaca, ccs: Chupacabra[], pontuacao: number, gameOver: boolean, cont: number) {
+  return { vaca, ccs, pontuacao, gameOver, cont }
 }
 /**
- * Cria-se um jogo usando: makeJogo(Vaca, Chupacabra, number, boolean)
- * ou {vaca: Vaca, cc: Chupacabra, pontuacao: number, gameOver: boolean}
- * interp. representa o jogo contendo uma vaca, um cc, pontuacao
- * e flag de game over
+ * Cria-se um jogo usando: makeJogo(Vaca, Chupacabra[], number, boolean, number)
+ * ou {vaca: Vaca, ccs: Chupacabra[], pontuacao: number, gameOver: boolean, cont: number}
+ * interp. representa o jogo contendo uma vaca, vários ccs, pontuacao
+ * flag de game over e contagem frames para temporização
  */
 // EXEMPLOS
-const JOGO_INICIAL = makeJogo(VACA_INICIAL, [CC_INICIAL], 0, false)
-const JOGO_INICIAL_PROX = makeJogo(VACA_INICIAL2, [CC_INICIAL_PROX], 0 + 1, false)
-const JOGO_COLIDINDO = makeJogo(VACA_MEIO, [CC_MEIO], 500, false)
-const JOGO_GAME_OVER = makeJogo(VACA_MEIO, [CC_MEIO], 500, true)
+const JOGO_INICIAL = makeJogo(VACA_INICIAL, [CC_INICIAL], 0, false, 1)
+const JOGO_INICIAL_PROX = makeJogo(VACA_INICIAL2, [CC_INICIAL_PROX], 0, false, 2)
+const JOGO_COLIDINDO = makeJogo(VACA_MEIO, [CC_MEIO], 500, false, 50)
+const JOGO_GAME_OVER = makeJogo(VACA_MEIO, [CC_MEIO], 500, true, 51)
 const JOGO_GAME_OVER_PROX = JOGO_GAME_OVER
+
+const JOGO_PASSANDO_UM_SEGUNDO = makeJogo(VACA_INICIAL, [CC_INICIAL], 0, false, 59)
+const JOGO_PASSANDO_UM_SEGUNDO_PROX = makeJogo(VACA_INICIAL2, [CC_INICIAL_PROX], 1, false, 0)
 
 const VACA_COLIDINDO_DIAG1 = makeVaca(LARGURA / 2 - RAIO_COLISAO_VACA - RAIO_COLISAO_CC + 3, Y_INICIAL_VACA, 3, 0) // um pouco antes do meio, à esquerda
 const CC_COLIDINDO_DIAG1 = makeChupacabra(LARGURA / 2, ALTURA / 2 - RAIO_COLISAO_CC - RAIO_COLISAO_VACA + 3, 3) // um pouco antes do meio, acima
 
-const JOGO_COLIDINDO_DIAG1 = makeJogo(VACA_COLIDINDO_DIAG1, [CC_COLIDINDO_DIAG1], 100, false)
-const JOGO_COLIDINDO_DIAG1_PROX = makeJogo(VACA_COLIDINDO_DIAG1, [CC_COLIDINDO_DIAG1], 100, true)
+const JOGO_COLIDINDO_DIAG1 = makeJogo(VACA_COLIDINDO_DIAG1, [CC_COLIDINDO_DIAG1], 100, false, 50)
+const JOGO_COLIDINDO_DIAG1_PROX = makeJogo(VACA_COLIDINDO_DIAG1, [CC_COLIDINDO_DIAG1], 100, true, 51)
 
 const SCREENSHOT_COLIDINDO_DIAG1 = desenhaJogo(JOGO_COLIDINDO_DIAG1)
 
 const VACA_COLIDINDO_FRENTE = makeVaca(LARGURA / 2 - (RAIO_COLISAO_VACA + RAIO_COLISAO_CC) + 3, Y_INICIAL_VACA, 3, 0) // um pouco antes do meio, à esquerda
 const CC_COLIDINDO_FRENTE = makeChupacabra(LARGURA / 2 + RAIO_COLISAO_CC - 3, ALTURA / 2, 3) // EXATAMENTE NO MEIO NO y
 
-const JOGO_COLIDINDO_FRENTE = makeJogo(VACA_COLIDINDO_FRENTE, [CC_COLIDINDO_FRENTE], 100, false)
-const JOGO_COLIDINDO_FRENTE_PROX = makeJogo(VACA_COLIDINDO_FRENTE, [CC_COLIDINDO_FRENTE], 100, true)
+const JOGO_COLIDINDO_FRENTE = makeJogo(VACA_COLIDINDO_FRENTE, [CC_COLIDINDO_FRENTE], 100, false, 50)
+const JOGO_COLIDINDO_FRENTE_PROX = makeJogo(VACA_COLIDINDO_FRENTE, [CC_COLIDINDO_FRENTE], 100, true, 51)
 
 const SCREENSHOT_COLIDINDO_FRENTE = desenhaJogo(JOGO_COLIDINDO_FRENTE)
 
 const VACA_COLIDINDO_ATRAS = makeVaca(LARGURA / 2 + RAIO_COLISAO_VACA + RAIO_COLISAO_CC - 3, Y_INICIAL_VACA, 3, 0) // um pouco antes do meio, à esquerda
 const CC_COLIDINDO_ATRAS = makeChupacabra(LARGURA / 2 - RAIO_COLISAO_CC + 3, ALTURA / 2, 3) // EXATAMENTE NO MEIO NO y
 
-const JOGO_COLIDINDO_ATRAS = makeJogo(VACA_COLIDINDO_ATRAS, [CC_COLIDINDO_ATRAS], 100, false)
-const JOGO_COLIDINDO_ATRAS_PROX = makeJogo(VACA_COLIDINDO_ATRAS, [CC_COLIDINDO_ATRAS], 100, true)
+const JOGO_COLIDINDO_ATRAS = makeJogo(VACA_COLIDINDO_ATRAS, [CC_COLIDINDO_ATRAS], 100, false, 50)
+const JOGO_COLIDINDO_ATRAS_PROX = makeJogo(VACA_COLIDINDO_ATRAS, [CC_COLIDINDO_ATRAS], 100, true, 51)
 
 const SCREENSHOT_COLIDINDO_ATRAS = desenhaJogo(JOGO_COLIDINDO_ATRAS)
 
-const JOGO_3_CCS = makeJogo(VACA_INICIAL, [CC_UM_QUARTO_BAIXO, CC_INICIAL, CC_TRES_QUARTOS_MEIO], 0, false)
-const JOGO_3_CCS_PROX = makeJogo(VACA_INICIAL2, [CC_UM_QUARTO_BAIXO_PROX, CC_INICIAL_PROX, CC_TRES_QUARTOS_MEIO_PROX], 1, false)
-
+const JOGO_3_CCS = makeJogo(VACA_INICIAL, [CC_UM_QUARTO_BAIXO, CC_INICIAL, CC_TRES_QUARTOS_MEIO], 0, false, 1)
+const JOGO_3_CCS_PROX = makeJogo(VACA_INICIAL2, [CC_UM_QUARTO_BAIXO_PROX, CC_INICIAL_PROX, CC_TRES_QUARTOS_MEIO_PROX], 0, false, 2)
 
 /// FUNCOES
 
@@ -364,21 +368,20 @@ testes(() => {
  * TODO
  */
 function atualizaJogo(jogo: Jogo): Jogo {
+  
+  let novoCont = (jogo.cont + 1) % FPS
+
   // tratamento da colisão
-  if (colidindo(jogo.vaca, jogo.ccs[0])) {  // todo: solucao parcial
-    return { ...jogo, gameOver: true }
+  if (jogo.ccs.some(cc => colidindo(jogo.vaca, cc))) {
+    return { ...jogo, gameOver: true, cont: novoCont }
   }
 
   let vacaMovida = moveVaca(jogo.vaca)
+  let ccsMovidos = jogo.ccs.map(cc => moveChupacabra(cc))
   
-  let ccsMovidos: Chupacabra[] = []
-  for (let cc of jogo.ccs){  // for each
-    let ccMovido: Chupacabra = moveChupacabra(cc)
-    ccsMovidos.push(ccMovido);
-  } // TODO: REFATORAR PARA FORMA MAIS ELEGANTE
-  
-  //  return makeJogo(vacaMovida, jogo.cc, jogo.pontuacao, jogo.gameOver)
-  return { ...jogo, vaca: vacaMovida, ccs: ccsMovidos, pontuacao: jogo.pontuacao + 1 }
+  let novaPontuacao = novoCont === 0 ? jogo.pontuacao + 1 : jogo.pontuacao
+
+  return { ...jogo, vaca: vacaMovida, ccs: ccsMovidos, pontuacao: novaPontuacao, cont: novoCont }
 }
 testes(() => {
   describe('Testes do atualizaJogo', () => {
@@ -397,10 +400,16 @@ testes(() => {
     test('Jogo com varios chupacabras', () => {
       expect(atualizaJogo(JOGO_3_CCS)).toStrictEqual(JOGO_3_CCS_PROX)
     })
+    test('Jogo somando pontuacao após um segundo', () => {
+      expect(atualizaJogo(JOGO_PASSANDO_UM_SEGUNDO)).toStrictEqual(JOGO_PASSANDO_UM_SEGUNDO_PROX)
+    })
   })
 })
 
-
+/**
+ * desenhaChupacabras: Chupacabra[] -> Imagem
+ * Desenha vários chupacabras sobre uma folha transparente
+ */
 function desenhaChupacabras(ccs: Chupacabra[], xVaca: number): Imagem {
   if (ccs.length === 0) {
     return folhaTransparente(LARGURA, ALTURA)
@@ -412,8 +421,6 @@ function desenhaChupacabras(ccs: Chupacabra[], xVaca: number): Imagem {
     primeiroCc.y,
     desenhaChupacabras(ccs.slice(1), xVaca))
 }
-
-
 
 /**
  * desenhaJogo: Jogo -> Imagem

@@ -5,6 +5,16 @@ extends: standard-with-typescript
 parserOptions:
   ecmaVersion: latest
   sourceType: module
-rules: {
-  "@typescript-eslint/strict-boolean-expressions": "warn"
-}
+rules: 
+  @typescript-eslint/strict-boolean-expressions: warn,
+  @typescript-eslint/padded-blocks: never,
+  no-trailing-spaces: 0
+  @typescript-eslint/explicit-function-return-type: 0
+  prefer-const: 0
+  @typescript-eslint/space-before-function-paren: 0
+  @typescript-eslint/consistent-type-imports: 0
+  @typescript-eslint/no-unused-vars: 0
+  @typescript-eslint/no-non-null-assertion: 0
+  @typescript-eslint/ban-types: 0
+
+

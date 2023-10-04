@@ -1,8 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/space-before-function-paren */
-/* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable @typescript-eslint/strict-boolean-expressions */
 const canvas = (document.getElementById('tela') ?? document.createElement('canvas')) as HTMLCanvasElement
 
 export interface Settings {
