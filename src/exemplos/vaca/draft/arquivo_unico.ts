@@ -8,9 +8,9 @@ import {
   folhaTransparente,
   larguraImagem,
   texto,
-} from "../../../lib/image";
-import { reactor } from "../../../lib/universe";
-import { testes } from "../../../lib/utils";
+} from "../../../../lib/image";
+import { reactor } from "../../../../lib/universe";
+import { testes } from "../../../../lib/utils";
 import imgVacaInoUrl from "./vaca-ino.png";
 import imgCCUrl from "./chupacabra.png";
 
