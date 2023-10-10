@@ -776,6 +776,7 @@ function main(): void {
       desenhar: desenhaJogo, // Jogo -> Imagem
       quandoTecla: trataTeclaJogo, // Jogo, String -> Jogo
       quandoSoltaTecla: trataTeclaSoltaJogo, // Jogo, String -> Jogo
+      modoDebug: true
     }
   );
 }

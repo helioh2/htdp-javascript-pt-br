@@ -1,3 +1,5 @@
+import { json } from "stream/consumers"
+
 const canvas = (document.getElementById('tela') ?? document.createElement('canvas')) as HTMLCanvasElement
 
 export interface Settings {
@@ -77,6 +79,12 @@ export function reactor(inic: any, settings: Settings = defaultSettings): void {
 
     // Desenha (renderiza) o jogo
     settings.desenhar!(estado).desenha()
+
+    if (settings.modoDebug) {
+      let debugDiv = document.getElementById("debug");
+      debugDiv!.hidden = false;
+      debugDiv!.innerHTML = JSON.stringify(estado, null, 2);
+    }
 
     // Repete
     window.requestAnimationFrame(loop)
